@@ -1,54 +1,67 @@
-## Ex. No : 5
-## RECOGNITION OF THE GRAMMAR (anb where n>=10) USING YACC
+## Ex. No : 6
+## IMPLEMENTATION OF THE BACK END OF THE COMPILER
 ## Name : ASWIKA B
 ## Register Number : 212224220013
 
 ## AIM
-To write a YACC program to recognize the grammar anb where n>=10.
+To write a program to implement the back end of the compiler.
 
 ## ALGORITHM
 * Start the program.
-* Write a program in the vi editor and save it with .l extension.
-* In the lex program, write the translation rules for the variables a and b.
-* Write a program in the vi editor and save it with .y extension.
-* Compile the lex program with lex compiler to produce output file as lex.yy.c. eg $ lex filename.l
-* Compile the yacc program with yacc compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
-* Compile these with the C compiler as gcc lex.yy.c y.tab.c
-* Enter a string as input and it is identified as valid or invalid.
+* Get the three variables from statements and stored in the text file k.txt.
+* Compile the program and give the path of the source file.
+* Execute the program.
+* Target code for the given statement is produced.
+* Stop the program.
   
 ## PROGRAM
 ```
 #include <stdio.h>
 #include <string.h>
-int main() {
-    char str[100];
-    int i = 0;
-    printf("Enter the string: ");
-    scanf("%s", str);
-    // Check if first character is 'a'
-    if (str[0] != 'a') {
-        printf("Invalid: string must start with 'a'\n");
-        return 0;
-    }
-    // Check if the rest of the characters are all 'b'
-    for (i = 1; str[i] != '\0'; i++) {
-        if (str[i] != 'b') {
-            printf("Invalid: all characters after 'a' must be 'b'\n");
-            return 0;
+
+// Define a structure for a simple IR instruction
+typedef struct {
+    char opcode[10]; // Operation code (e.g., ADD, MOV)
+    char arg1[10];   // First argument (register or variable)
+    char arg2[10];   // Second argument (register or variable)
+    char result[10]; // Result variable
+} Instruction;
+
+// Function to generate pseudo-assembly from the IR
+void generate_code(Instruction ir[], int count) {
+    printf("Generated Assembly:\n");
+    for (int i = 0; i < count; i++) {
+        if (strcmp(ir[i].opcode, "ADD") == 0) {
+            printf("    ADD %s, %s ; Store in %s\n", ir[i].arg1, ir[i].arg2, ir[i].result);
+        } else if (strcmp(ir[i].opcode, "SUB") == 0) {
+            printf("    SUB %s, %s ; Store in %s\n", ir[i].arg1, ir[i].arg2, ir[i].result);
+        } else if (strcmp(ir[i].opcode, "MOV") == 0) {
+            printf("    MOV %s, %s\n", ir[i].arg1, ir[i].result);
+        } else {
+            printf("Unknown operation: %s\n", ir[i].opcode);
         }
     }
-    // Check if there are at least 10 'b's
-    int b_count = strlen(str) - 1;
-    if (b_count >= 10) {
-        printf("Valid string: matches anb where n >= 10\n");
-    } else {
-        printf("Invalid: number of 'b's is less than 10 (found %d)\n", b_count);
-    }
+}
+
+int main() {
+    // Define a simple list of IR instructions
+    Instruction ir[] = {
+        {"MOV", "R1", "", "A"},    // MOV R1 to A
+        {"ADD", "A", "B", "R2"},   // ADD A and B, store in R2
+        {"SUB", "R2", "C", "R3"},  // SUB R2 and C, store in R3
+        {"MOV", "R3", "", "D"}     // MOV R3 to D
+    };
+    
+    int ir_count = sizeof(ir) / sizeof(Instruction);
+    
+    // Generate the assembly-like code from the IR
+    generate_code(ir, ir_count);
+    
     return 0;
 }
 ```
 ## OUTPUT
-<img width="656" height="422" alt="image" src="https://github.com/user-attachments/assets/efd12d37-3793-45f7-9187-f7716acb6f83" />
+<img width="482" height="375" alt="image" src="https://github.com/user-attachments/assets/cc265ce1-158f-4c89-b3ec-00f2a8fb65fa" />
 
 ## RESULT
-The YACC program to recognize the grammar anb where n>=10 is executed successfully and the output is verified.
+The back end of the compiler is implemented successfully, and the output is verified.
