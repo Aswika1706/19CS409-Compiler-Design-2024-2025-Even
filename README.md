@@ -1,69 +1,91 @@
-# Ex. No : 4	
-# RECOGNITION OF A VALID VARIABLE WHICH STARTS WITH A LETTER FOLLOWED BY ANY NUMBER OF LETTERS OR DIGITS USING YACC
-# Name: ASWIKA B
+## Ex. No : 3
+## RECOGNITION OF A VALID ARITHMETIC EXPRESSION THAT USES
+## Name : ASWIKA B
 ## Register Number : 212224220013
 
-
-## AIM   
-To write a YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits.
+## AIM
+To write a yacc program to recognize a valid arithmetic expression that uses operator +,- ,* and /.
 
 ## ALGORITHM
-1.	Start the program.
-2.	Write a program in the vi editor and save it with .l extension.
-3.	In the lex program, write the translation rules for the keywords int, float and double and for the identifier.
-4.	Write a program in the vi editor and save it with .y extension.
-5.	Compile the lex program with lex compiler to produce output file as lex.yy.c. eg $ lex filename.l
-6.	Compile the yacc program with YACC compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
-7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
-8.	Enter a statement as input and the valid variables are identified as output.
-
+* Start the program.
+* Write a program in the vi editor and save it with .l extension.
+* In the lex program, write the translation rules for the operators =,+,-,*,/ and for the identifier.
+* Write a program in the vi editor and save it with .y extension.
+* Compile the lex program with lex compiler to produce output file as lex.yy.c. eg $ lex filename.l
+* Compile the yacc program with yacc compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
+* Compile these with the C compiler as gcc lex.yy.c y.tab.c
+* Enter an arithmetic expression as input and the tokens are identified as output.
+  
 ## PROGRAM
-variable_test.l
 ```
-%{
-#include "variable_test.tab.h"
-%}
-
-%%
-"int"     { return INT; }
-"float"   { return FLOAT; }
-"double"  { return DOUBLE; }
-","       { return ','; }
-";"       { return ';'; }
-[a-zA-Z][a-zA-Z0-9]* { printf("\nIdentifier is %s", yytext); return ID; }
-[ \t\r\n]     { /* skip whitespace and newlines */ }
-.         { /* ignore unrecognized characters */ }
-%%
-
-int yywrap() { return 1; }
-```
-variable_test.y
-```
-%{
 #include <stdio.h>
-%}
-%token ID INT FLOAT DOUBLE
-%%
-D : T L ';'    { printf("Valid Declaration\n"); }
-  ;
-L : L ',' ID   | ID
-  ;
-T : INT | FLOAT | DOUBLE
-  ;
-%%
-extern FILE *yyin;
-int main() {
-    do {
-        yyparse();
-    } while (!feof(yyin));
+#include <ctype.h>
+#include <string.h>
+
+char expr[100];
+int pos = 0;
+
+int E();
+int F();
+void error();
+
+int F() {
+    if (isdigit(expr[pos])) {
+        while (isdigit(expr[pos])) pos++;
+        return 1;
+    }
+    else if (isalpha(expr[pos])) {
+        while (isalnum(expr[pos])) pos++;
+        return 1;
+    }
+    else if (expr[pos] == '(') {
+        pos++;
+        if (E()) {
+            if (expr[pos] == ')') {
+                pos++;
+                return 1;
+            }
+        }
+        return 0;
+    }
     return 0;
 }
-void yyerror(char *s) { fprintf(stderr, "Error: %s\n", s); }
+
+int E() {
+    if (!F()) return 0;
+    while (expr[pos] == '+' || expr[pos] == '-' || expr[pos] == '*' || expr[pos] == '/') {
+        pos++;
+        if (!F())
+            return 0;
+    }
+    return 1;
+}
+
+void error() {
+    printf("\nError: Invalid arithmetic expression\n");
+}
+
+int main() {
+    printf("Enter the expression:\n");
+    fgets(expr, sizeof(expr), stdin);
+    expr[strcspn(expr, "\n")] = '\0';
+    pos = 0;
+    if (E() && expr[pos] == '\0') {
+        printf("\nValid arithmetic expression\n");
+    } else {
+        error();
+    }
+    return 0;
+}
 ```
+## OUTPUT
+Valid Expression
+<img width="1267" height="573" alt="image" src="https://github.com/user-attachments/assets/b3dba5e2-9b30-4450-b5c8-2ad3c499d4f1" />
 
-## OUTPUT 
 
-<img width="389" height="205" alt="Screenshot 2025-11-21 103124" src="https://github.com/user-attachments/assets/cf1e5d80-752b-494b-988c-31143df89c34" />
+Invalid Expression
+<img width="1262" height="637" alt="image" src="https://github.com/user-attachments/assets/c3dc08d1-7ba3-440f-be5a-ba94daf5a9c2" />
+
 
 ## RESULT
-A  YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits is executed successfully and the output is verified.
+A YACC program to recognize a valid arithmetic expression that uses operator +,-,* and / is executed successfully and the output is verified
